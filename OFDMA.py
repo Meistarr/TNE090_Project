@@ -1,1 +1,3 @@
-print("Hello World")
+msg = "Hello World"
+raspberry = "pi"
+print(msg)
