@@ -7,7 +7,7 @@ import scipy.interpolate
 K = 64 #Number of OFDM subcarriers
 CP = K//4 #Length of cyclic prefix, 25% of the block.
 P = 8 #Number of pilot carriers per OFDM Block
-N = 0
+N = 1
 pilotValue = 3+3j # Known value for each pilot.
 
 allCarriers = np.arange(K)  # indices of all subcarriers ([0, 1, ... K-1])
@@ -24,8 +24,10 @@ dataCarriers = np.delete(allCarriers, pilotCarriers)
 print ("allCarriers:   %s" % allCarriers)
 print ("pilotCarriers: %s" % pilotCarriers)
 print ("dataCarriers:  %s" % dataCarriers)
+
+#Plot values for pilot- and datacarriers
 plt.figure(N)
-N = N + 1
+N += N
 plt.plot(pilotCarriers, np.zeros_like(pilotCarriers), 'bo', label='pilot')
 plt.plot(dataCarriers, np.zeros_like(dataCarriers), 'ro', label='data')
 plt.legend(fontsize=10)
@@ -51,7 +53,7 @@ mapping_table = {
     (1,1,1,1) :  1+1j
 }
 plt.figure(N)
-N = N+1
+N += N
 for b3 in [0, 1]:
     for b2 in [0, 1]:
         for b1 in [0, 1]:
@@ -65,7 +67,7 @@ demapping_table = {v : k for k, v in mapping_table.items()}
 channelResponse = np.array([1, 0, 0.3+0.3j])  # the impulse response of the wireless channel
 H_exact = np.fft.fft(channelResponse, K)
 plt.figure(N)
-N = N+1
+N += N
 plt.plot(allCarriers, abs(H_exact))
 
 SNRdb = 25  # signal to noise-ratio in dB at the receiver 
@@ -128,14 +130,16 @@ def channel(signal):
     return convolved + noise
 OFDM_TX = OFDM_withCP
 OFDM_RX = channel(OFDM_TX)
+
+
 plt.figure(N)
-N = N+1
+N += N
 plt.figure(figsize=(8,2))
 plt.plot(abs(OFDM_TX), label='TX signal')
 plt.plot(abs(OFDM_RX), label='RX signal')
 plt.legend(fontsize=10)
-plt.xlabel('Time'); plt.ylabel('$|x(t)|$');
-plt.grid(True);
+plt.xlabel('Time'); plt.ylabel('$|x(t)|$')
+plt.grid(True)
 
 
 def removeCP(signal):
@@ -160,7 +164,6 @@ def channelEstimate(OFDM_demod):
     Hest = Hest_abs * np.exp(1j*Hest_phase)
     
     plt.figure(N)
-    N = N+1
     
     plt.plot(allCarriers, abs(H_exact), label='Correct Channel')
     plt.stem(pilotCarriers, abs(Hest_at_pilots), label='Pilot estimates')
@@ -171,6 +174,7 @@ def channelEstimate(OFDM_demod):
     return Hest
 
 Hest = channelEstimate(OFDM_demod)
+N += N
 
 def equalize(OFDM_demod, Hest):
     return OFDM_demod / Hest
@@ -180,7 +184,7 @@ def get_payload(equalized):
     return equalized[dataCarriers]
 QAM_est = get_payload(equalized_Hest) 
 plt.figure(N)
-N = N+1
+N += N
 plt.plot(QAM_est.real, QAM_est.imag, 'bo');
 
 def Demapping(QAM):
@@ -199,11 +203,12 @@ def Demapping(QAM):
     
     # transform the constellation point into the bit groups
     return np.vstack([demapping_table[C] for C in hardDecision]), hardDecision
-plt.figure(N)
-N = N+1
+
 PS_est, hardDecision = Demapping(QAM_est)
+plt.figure(N)
+N += N
 for qam, hard in zip(QAM_est, hardDecision):
-    plt.plot([qam.real, hard.real], [qam.imag, hard.imag], 'b-o');
+    plt.plot([qam.real, hard.real], [qam.imag, hard.imag], 'b-o')
     plt.plot(hardDecision.real, hardDecision.imag, 'ro')
 
 def PS(bits):
