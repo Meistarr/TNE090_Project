@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
 #Importing modules
 import numpy as np
 import matplotlib.pyplot as plt
@@ -195,13 +193,3 @@ def PS(bits):
 bits_est = PS(PS_est)
 
 print ("Obtained Bit error rate: ", np.sum(abs(bits-bits_est))/len(bits))
-=======
-msg = "Hello World"
-raspberry = "pi"
-print(msg)
->>>>>>> 1653eb97b1b68cba934cb0e9d1a172033fd6dcaf
-=======
-msg = "Hello World"
-raspberry = "pi"
-print(msg)
->>>>>>> 1653eb97b1b68cba934cb0e9d1a172033fd6dcaf
